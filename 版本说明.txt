@@ -1,0 +1,1 @@
+上海三个台站ID存成StationID，Web和手机端通过MQ控制设备

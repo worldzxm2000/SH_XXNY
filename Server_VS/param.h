@@ -15,7 +15,7 @@ typedef void(*GetControlWidget_Lib)(QString StationID, uint Socket, QWidget* par
 typedef void(*SetTime_Lib)(QString StationID, uint Socket);//对时命令
 typedef void(*SetCommand_Lib)(uint Socket, int CommandType,QString Params1,QString Params2,QString StationID);//终端命令
 typedef void(*SetValueToControlWidget_Lib)(QStringList ValueList);//返回值
-extern 	SimpleProducer g_SimpleProducer, g_SimpleProducer_ZDH,g_SimpleProducer_Command;
+extern 	SimpleProducer g_SimpleProducer, g_SimpleProducer_ZDH, g_SimpleProducer_Command, g_SimpleProducer_Command2;
 extern WebCommServer g_WebCommServer ;
 const int DataBuffSize = 4 * 1024;
 typedef void* HLIB;		//动态库句柄
@@ -101,6 +101,7 @@ typedef struct
 //UDP信息
 typedef struct
 {
+	QString UID;//用户ID
 	SOCKADDR_IN from;//udp socket号
 	int ServiceID;//业务号
 	QString StationID;//台站号

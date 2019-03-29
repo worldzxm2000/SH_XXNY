@@ -45,7 +45,7 @@ public:
 	//获取连接客户端数组
 	QList<CLIENTINFO> Clients;
 	//发送COMMAND指令
-	void SendCommand(int cmm,QString StationID, QStringList CommLst);
+	void SendCommand(QString UID,int cmm,QString StationID, QStringList CommLst);
 	//获取在线设备个数
 	int GetOnlineCount();
 	//打开设备控制窗体

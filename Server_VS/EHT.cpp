@@ -148,32 +148,13 @@ int EHT::GetPort()
 //获取Socket号
 unsigned int EHT::GetSocket(QString StationID)
 {
-	if (Clients.size()==0)
-	{
-		QJsonObject json, subJson;
-		json.insert("ServerTypeID", m_ServiceID);
-		json.insert("StationID", StationID);
-		json.insert("DeviceID", NULL);
-		subJson.insert("Count", 1);
-		subJson.insert("Params1", "offline");
-		json.insert("Command", 80203);
-		json.insert("Parameter", subJson);
-		//发送至Web服务器
-		QJsonDocument document;
-		document.setObject(json);
-		QByteArray byteArray = document.toJson(QJsonDocument::Compact);
-		LPCSTR dataChar;
-		dataChar = byteArray.data();
-		if (g_SimpleProducer_Command.send(dataChar, strlen(dataChar)) < 0)
-			GetErrorSlot(10304);
-	}
+
 	for (int i = 0; i < Clients.size(); i++)
 	{
 		if (Clients[i].StationID == StationID)
 		{
 			//离线
 			if (Clients[i].Online == false)
-
 			{
 				QJsonObject json, subJson;
 				json.insert("ServerTypeID", m_ServiceID);
@@ -191,6 +172,9 @@ unsigned int EHT::GetSocket(QString StationID)
 				dataChar = byteArray.data();
 				if (g_SimpleProducer_Command.send(dataChar, strlen(dataChar)) < 0)
 					GetErrorSlot(10304);
+				if (g_SimpleProducer_Command2.send(dataChar, strlen(dataChar)) < 0)
+					GetErrorSlot(10304);
+				return 0;
 			}
 			return Clients[i].SocketID;
 		}
@@ -900,21 +884,42 @@ void EHT::Disconnect()
 }
 
 //终端命令操作
-void EHT::SendCommand(int cmm, QString StationID, QStringList CommLst)
+void EHT::SendCommand(QString UID,int cmm, QString StationID, QStringList CommLst)
 {
 	UDPClient client;
+	client.UID = UID;
 	client.Count = 0;
 	client.StationID = StationID;
-	ClientsQ.append(client);
 	if (!m_IsRun)
 		return;
 	//找到对应台站号的Socket值
 	unsigned int SocketID = 0;
 	SocketID = GetSocket(StationID);
+	//离线了！找不到
 	if (SocketID==0)
 	{
+		QJsonObject json, subJson;
+		json.insert("UID", UID);
+		json.insert("ServerTypeID", m_ServiceID);
+		json.insert("StationID", StationID);
+		json.insert("DeviceID", NULL);
+		subJson.insert("Count", 1);
+		subJson.insert("Params1", "offline");
+		json.insert("Command", 80203);
+		json.insert("Parameter", subJson);
+		//发送至Web服务器
+		QJsonDocument document;
+		document.setObject(json);
+		QByteArray byteArray = document.toJson(QJsonDocument::Compact);
+		LPCSTR dataChar;
+		dataChar = byteArray.data();
+		if (g_SimpleProducer_Command.send(dataChar, strlen(dataChar)) < 0)
+			GetErrorSlot(10304);
+		if (g_SimpleProducer_Command2.send(dataChar, strlen(dataChar)) < 0)
+			GetErrorSlot(10304);
 		return;
 	}
+	ClientsQ.append(client);
 	QString Params1, Params2;
 	switch (CommLst.count())
 	{
@@ -969,7 +974,7 @@ void EHT::Reconnect()
 	}
 	g_SimpleProducer.close();
 	g_SimpleProducer_ZDH.close();
-	//g_SimpleProducer_sh.close();
+	g_SimpleProducer_Command2.close();
 	g_SimpleProducer_Command.close();
 	g_WebCommServer.close();
 	
@@ -978,6 +983,7 @@ void EHT::Reconnect()
 	g_SimpleProducer.start();
 	g_SimpleProducer_ZDH.start();
 	g_SimpleProducer_Command.start();
+	g_SimpleProducer_Command2.start();
 	g_WebCommServer.start();
 }
 
@@ -1026,12 +1032,14 @@ void EHT::GetClient(QJsonObject json)
 {
 	QString StationID;
 	StationID = json.find("StationID").value().toString();
+	
 	if (StationID == NULL)
 		return;
 	for (int i = ClientsQ.count() - 1; i > -1; i--)
 	{
 		if (ClientsQ[i].StationID == StationID)
 		{
+			json.insert("UID", ClientsQ[i].UID);
 			//发送至Web服务器
 			QJsonDocument document;
 			document.setObject(json);
@@ -1039,6 +1047,8 @@ void EHT::GetClient(QJsonObject json)
 			LPCSTR dataChar;
 			dataChar = byteArray.data();
 			if (g_SimpleProducer_Command.send(dataChar, strlen(dataChar)) < 0)
+				GetErrorSlot(10304);
+			if (g_SimpleProducer_Command2.send(dataChar, strlen(dataChar)) < 0)
 				GetErrorSlot(10304);
 			m_timerMutex.lock();
 			ClientsQ.removeAt(i);

@@ -29,6 +29,7 @@ void WebCommServer::onMessage(const Message* message)
 				if (doc.isObject())
 				{
 					json = doc.object();
+					QString UID = json.find("UID").value().toString();
 					int ServiceTypeID = json.find("ServiceTypeID").value().toInt();
 					QString StationID = json.find("StationID").value().toString();
 					QString DeviceID = json.find("DeviceID").value().toString();
@@ -42,7 +43,7 @@ void WebCommServer::onMessage(const Message* message)
 						if(paramter!=NULL)
 							commLst.append(paramter);
 					}
-					emit NoticfyServerFacilityID(ServiceTypeID, StationID, DeviceID, CommandID,commLst);
+					emit NoticfyServerFacilityID(UID,ServiceTypeID, StationID, DeviceID, CommandID,commLst);
 				}
 			}
 			else

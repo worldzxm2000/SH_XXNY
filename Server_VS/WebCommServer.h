@@ -48,6 +48,6 @@ public:
 	std::string destURI;
 signals:
 	//通知UI读取设备参数指令
-	void NoticfyServerFacilityID(int ServiceTypeID, QString StationID, QString DeviceID, int Command, QStringList CommLst);
+	void NoticfyServerFacilityID(QString UID,int ServiceTypeID, QString StationID, QString DeviceID, int Command, QStringList CommLst);
 };
 

@@ -172,7 +172,7 @@ private slots:
 	//刷新设备ListCtrl控件信息
 	void RefreshListCtrl(QString SrvName, QString StationID, QDateTime LastTime, QDateTime LoginTime,QString DeviceID);
 	//终端读取设备命令
-	void RequestForReadCOMM(int ServiceTypeID, QString StationID, QString FacilityID, int Command, QStringList CommLst);
+	void RequestForReadCOMM(QString UID,int ServiceTypeID, QString StationID, QString FacilityID, int Command, QStringList CommLst);
 	//错误提示
 	void GetErrorMSG(int error);
 	//添加Lib按钮事件

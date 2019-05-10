@@ -17,7 +17,8 @@
 #include <stdio.h>
 #include <iostream>
 #include <memory>
-
+#include<QList>
+#include<QTimer>
 using namespace activemq;
 using namespace activemq::core;
 using namespace decaf;
@@ -27,8 +28,9 @@ using namespace decaf::util::concurrent;
 using namespace cms;
 using namespace std;
 
-class SimpleProducer
+class SimpleProducer:public QObject
 {
+	Q_OBJECT
 public:
 	SimpleProducer();
 	virtual ~SimpleProducer();
@@ -48,7 +50,6 @@ private:
 	void cleanup();
 	virtual bool initialize();
 	virtual void onException(const CMSException& ex AMQCPP_UNUSED);
-
 private:
 	Connection* connection;
 	Session* session;

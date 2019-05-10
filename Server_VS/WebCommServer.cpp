@@ -65,8 +65,7 @@ bool WebCommServer::initialize()
 {
 	try {
 	// Create a ConnectionFactory
-	auto_ptr<ConnectionFactory> connectionFactory(
-		ConnectionFactory::createCMSConnectionFactory(brokerURI));
+		auto_ptr<ConnectionFactory> connectionFactory(ConnectionFactory::createCMSConnectionFactory(brokerURI));
 
 	// Create a Connection
 	connection = connectionFactory->createConnection();
@@ -103,6 +102,7 @@ void WebCommServer::cleanup()
 
 	if (connection != NULL) {
 		try {
+			connection->stop();
 			connection->close();
 		}
 		catch (cms::CMSException& ex) {
@@ -129,30 +129,36 @@ void WebCommServer::cleanup()
 //连接被中断
 void WebCommServer::onException(const CMSException& ex AMQCPP_UNUSED)
 {
-	if (m_IsConnected = true)
-	{
-		m_IsConnected = false;
-		close();
-		while (!initialize())
-		{
-			LogWrite::SYSLogMsgOutPut(QString::fromLocal8Bit("监听队列正在重连..."));
-			Sleep(1000 * 3);
-		}
-	}
+	m_IsConnected = false;
+	LogWrite::SYSLogMsgOutPut(QString::fromLocal8Bit("监听队列正在重连..."));
+	//if (m_IsConnected = true)
+	//{
+	//	m_IsConnected = false;
+	//	//close();
+	//	while (!Connect())
+	//	{
+	//		LogWrite::SYSLogMsgOutPut(QString::fromLocal8Bit("监听队列正在重连..."));
+	//		Sleep(1000 * 3);
+	//	}
+	//	m_IsConnected = true;
+	//}
 }
 
 void WebCommServer::transportInterrupted() //连接被中断
 {
-	if (m_IsConnected = true)
-	{
-		m_IsConnected = false;
-		close();
-		while (!initialize())
-		{
-			LogWrite::SYSLogMsgOutPut(QString::fromLocal8Bit("监听队列正在重连..."));
-			Sleep(1000 * 3);
-		}
-	}
+	m_IsConnected = false;
+	LogWrite::SYSLogMsgOutPut(QString::fromLocal8Bit("监听队列正在重连..."));
+	//if (m_IsConnected = true)
+	//{
+	//	m_IsConnected = false;
+	//	//close();
+	//	while (!Connect())
+	//	{
+	//		LogWrite::SYSLogMsgOutPut(QString::fromLocal8Bit("监听队列正在重连..."));
+	//		Sleep(1000 * 3);
+	//	}
+	//	m_IsConnected = true;
+	//}
 }
 
 void WebCommServer::transportResumed() //连接恢复

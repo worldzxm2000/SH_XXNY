@@ -62,7 +62,7 @@ private:
 	//初始化IOCP
 	void InitIOCP();
 	//消息中间件错误重连
-	void ReConnectActiveMq();
+	//void ReConnectActiveMq();
 	//重连定时器
 	QTimer *ReconnectTimer;
 	//重连状态
@@ -125,7 +125,7 @@ private slots:
     //对时处理
     void SetTime();
 	//重连MQ处理
-	void Reconnect();
+	//void Reconnect();
     //离线通知
 	void OffLineSlot(unsigned int CltSocket);
 	//新的数据(观测数据或者心跳数据)

@@ -130,28 +130,26 @@ void Server_VS::ConfigWindow()
 	
 	try
 	{
-	
-
 		activemq::library::ActiveMQCPP::initializeLibrary();
 		g_SimpleProducer.UserName = "admin";
 		g_SimpleProducer.Password = "admin";
 		g_SimpleProducer.brokerURI = "tcp://117.158.216.250:61616";
-		g_SimpleProducer.destURI = "DataFromFacility1";
+		g_SimpleProducer.destURI = "DataFromFacility1_test";
 
 		g_SimpleProducer_ZDH.UserName = "admin";
 		g_SimpleProducer_ZDH.Password = "admin";
 		g_SimpleProducer_ZDH.brokerURI = "tcp://117.158.216.250:61616";
-		g_SimpleProducer_ZDH.destURI = "ZDH";
+		g_SimpleProducer_ZDH.destURI = "ZDH_test";
 		
 		g_SimpleProducer_Command.UserName = "admin";
 		g_SimpleProducer_Command.Password = "admin";
 		g_SimpleProducer_Command.brokerURI = "tcp://117.158.216.250:61616";
-		g_SimpleProducer_Command.destURI = "t_sh";
+		g_SimpleProducer_Command.destURI = "t_sh_test";
 
 		g_WebCommServer.UserName = "admin";
 		g_WebCommServer.Password = "admin";
-		g_WebCommServer.brokerURI = "tcp://117.158.216.250:61616";
-		g_WebCommServer.destURI = "CommandFromWebt_sh";
+		g_WebCommServer.brokerURI = "failover:(tcp://117.158.216.250:61616)?transport.useAsyncSend=true&initialReconnectDelay=10&maxReconnectDelay=30000&maxReconnectAttempts=-1";
+		g_WebCommServer.destURI = "CommandFromWebt_sh_test";
 	    connect(&g_WebCommServer, SIGNAL(NoticfyServerFacilityID(QString,int, QString, QString, int, QStringList)), this, SLOT(RequestForReadCOMM(QString,int, QString, QString, int, QStringList)), Qt::AutoConnection);
 
 
@@ -227,12 +225,12 @@ void Server_VS::RequestForReadCOMM(QString UID,int ServiceTypeID, QString Statio
 	//EHTPool.GetEHT(ServiceTypeID)->SendCommand(Command, FacilityID,CommLst);
 
 		//EHTPool.GetEHT(ServiceTypeID, StationID)->SendCommand(UID,Command, StationID, CommLst);
-		EHT *teht = EHTPool.GetEHT(ServiceTypeID, StationID);
-		if (teht ==NULL)
+		EHT *pEHT = EHTPool.GetEHT(ServiceTypeID, StationID);
+		if (pEHT ==nullptr)
 		{
 			return;
 		}
-		teht->SendCommand(UID, Command, StationID, CommLst);
+		pEHT->SendCommand(UID, Command, StationID, CommLst);
 }
 
 //添加Lib服务

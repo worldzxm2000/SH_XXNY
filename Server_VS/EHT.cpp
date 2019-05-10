@@ -26,10 +26,7 @@ EHT::EHT(QWidget *parent)
 	OffLineTimer = new QTimer(parent);
 	connect(OffLineTimer, SIGNAL(timeout()), this, SLOT(Disconnect()));
 	OffLineTimer->start(1000 * 60 * 20);
-	//消息中间件重连时间
-	ReconnectTimer = new QTimer(parent);
-	ReconnectTimer->
-	connect(ReconnectTimer, SIGNAL(timeout()), this, SLOT(Reconnect()));
+	
 	//Image图片重新处理时间
 	ReHandleZB_IMAGE = new QTimer(parent);
 	ReHandleZB_IMAGE->connect(ReHandleZB_IMAGE, SIGNAL(timeout()), this, SLOT(MoveImageToDesAddr()));
@@ -785,7 +782,7 @@ void EHT:: GetErrorSlot(int ErrorMSG)
 		break;
 	case 10304:
 		strMSG = QString::fromLocal8Bit("消息中间件通信异常！");
-		ReConnectActiveMq();
+	//	ReConnectActiveMq();
 		break;
 	case 10305:
 		strMSG = QString::fromLocal8Bit("接收内存溢出");
@@ -945,41 +942,38 @@ int EHT::GetOnlineCount()
 	return count;
 }
 
-//重连MQ
-void EHT::ReConnectActiveMq()
-{
-	//已经连接
-	LPCSTR dataChar = "test";
-	if (g_SimpleProducer.send(dataChar, strlen(dataChar)) == 1)
-		return;
-	//重连是否开启
-	if (ReconnectTimer->isActive())
-		return;
-	LogWrite::SYSLogMsgOutPut(QString::fromLocal8Bit("消息中间件开始重连..."));
-	ReconnectTimer->start(1000 * 10);
-}
-
-void EHT::Reconnect()
-{
-	LPCSTR dataChar = "test";
-	if (g_SimpleProducer.send(dataChar, strlen(dataChar))==1)
-	{
-		LogWrite::SYSLogMsgOutPut(QString::fromLocal8Bit("消息中间件已经重连"));
-		ReconnectTimer->stop();
-		return;
-	}
-	g_SimpleProducer.close();
-	g_SimpleProducer_ZDH.close();
-	g_SimpleProducer_Command.close();
-	g_WebCommServer.close();
-	
-
-	activemq::library::ActiveMQCPP::initializeLibrary();
-	g_SimpleProducer.start();
-	g_SimpleProducer_ZDH.start();
-	g_SimpleProducer_Command.start();
-	g_WebCommServer.start();
-}
+////重连MQ
+//void EHT::ReConnectActiveMq()
+//{
+//	//已经连接
+//	LPCSTR dataChar = "test";
+//	if (g_SimpleProducer.send(dataChar, strlen(dataChar)) == 1)
+//		return;
+//	//重连是否开启
+//	if (ReconnectTimer->isActive())
+//		return;
+//	LogWrite::SYSLogMsgOutPut(QString::fromLocal8Bit("消息中间件开始重连..."));
+//	ReconnectTimer->start(1000 * 10);
+//}
+//
+//void EHT::Reconnect()
+//{
+//	LPCSTR dataChar = "test";
+//	if (g_SimpleProducer.send(dataChar, strlen(dataChar))==1)
+//	{
+//		LogWrite::SYSLogMsgOutPut(QString::fromLocal8Bit("消息中间件已经重连"));
+//		ReconnectTimer->stop();
+//		return;
+//	}
+//	g_SimpleProducer.close();
+//	g_SimpleProducer_ZDH.close();
+//	g_SimpleProducer_Command.close();
+//
+//	activemq::library::ActiveMQCPP::initializeLibrary();
+//	g_SimpleProducer.start();
+//	g_SimpleProducer_ZDH.start();
+//	g_SimpleProducer_Command.start();
+//}
 
 //打开调试窗体
 void EHT::OpenCtrlWnd(QString StationID,QString DeviceID)
@@ -1007,21 +1001,23 @@ void EHT::OpenCtrlWnd(QString StationID,QString DeviceID)
 //超时检测
 void EHT::timerEvent(QTimerEvent *event)
 {
-	//每一秒进行计数，当计数器超过15时，Timeout。
-	for (int i = ClientsQ.count() - 1; i > -1; i--)
+	if (event->timerId() == m_TimeOutTimerID)
 	{
-		ClientsQ[i].Count++;
-		if (ClientsQ[i].Count > TIMEOUT)
+		//每一秒进行计数，当计数器超过15时，Timeout。
+		for (int i = ClientsQ.count() - 1; i > -1; i--)
 		{
-
-			m_timerMutex.lock();
-			ClientsQ.removeAt(i);
-			m_timerMutex.unlock();
+			ClientsQ[i].Count++;
+			if (ClientsQ[i].Count > TIMEOUT)
+			{
+				m_timerMutex.lock();
+				ClientsQ.removeAt(i);
+				m_timerMutex.unlock();
+			}
 		}
 	}
 }
 
-//查找相对应的UDP
+//查找相对应的请求
 void EHT::GetClient(QJsonObject json)
 {
 	QString StationID;
@@ -1042,7 +1038,6 @@ void EHT::GetClient(QJsonObject json)
 			dataChar = byteArray.data();
 			if (g_SimpleProducer_Command.send(dataChar, strlen(dataChar)) < 0)
 				GetErrorSlot(10304);
-			qDebug() << "send activemq meg " << QDateTime::currentDateTime().toString("hh:mm:ss:zzz");
 			m_timerMutex.lock();
 			ClientsQ.removeAt(i);
 			m_timerMutex.unlock();

@@ -1,6 +1,8 @@
 
 #include "SimpleProducer.h"
 #include<QMessageBox>
+#include"LogWrite.h"
+
 SimpleProducer::SimpleProducer()
 {
 	 connection = nullptr;
@@ -21,7 +23,6 @@ void SimpleProducer::close()
 
 void SimpleProducer::onException(const CMSException& ex AMQCPP_UNUSED)
 {
-	printf("CMS Exception occurred.  Shutting down client.\n");
 	exit(1);
 }
 bool SimpleProducer::start(const std::string& UserName, const std::string& Password, const std::string& brokerURI, unsigned int numMessages, const std::string& destURI, bool useTopic = false, bool clientAck = false)
@@ -88,32 +89,15 @@ LRESULT SimpleProducer::send(const char* Message, int nSize)
 			return -1;
 		std::string str(Message);
 		std::auto_ptr<TextMessage> message(session->createTextMessage(str));
-		producer->send(message.get());
+        producer->send(message.get());
 		return 1;
 	}
 	catch (CMSException& e)
 	{
+		
 		return -1;
 	}
-	//try
-	//{
-	//	// 消息内容
-	//	// 创建一个文本类型的消息
-	//	if (session == nullptr)
-	//		return -1;
-	//	BytesMessage* bytesMessage=session->createBytesMessage((unsigned char*)Message, nSize);
-	//	// 发送消息
-	//	producer->send(bytesMessage);
-	//	delete bytesMessage;
-	//	return 1;
-	//}
-	//catch (CMSException& e)
-	//{
-	//	return -1;
-	//}
-	
 }
-
 
 void SimpleProducer::cleanup()
 {

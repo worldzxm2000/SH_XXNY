@@ -136,7 +136,7 @@ void Server_VS::ConfigWindow()
 		g_SimpleProducer.UserName = "admin";
 		g_SimpleProducer.Password = "admin";
 		g_SimpleProducer.brokerURI = "tcp://117.158.216.250:61616";
-		g_SimpleProducer.destURI = "DataFromFacility11";
+		g_SimpleProducer.destURI = "DataFromFacility1";
 
 		g_SimpleProducer_ZDH.UserName = "admin";
 		g_SimpleProducer_ZDH.Password = "admin";
@@ -146,12 +146,12 @@ void Server_VS::ConfigWindow()
 		g_SimpleProducer_Command.UserName = "admin";
 		g_SimpleProducer_Command.Password = "admin";
 		g_SimpleProducer_Command.brokerURI = "tcp://117.158.216.250:61616";
-		g_SimpleProducer_Command.destURI = "t_sh1";
+		g_SimpleProducer_Command.destURI = "t_sh";
 
 		g_WebCommServer.UserName = "admin";
 		g_WebCommServer.Password = "admin";
 		g_WebCommServer.brokerURI = "tcp://117.158.216.250:61616";
-		g_WebCommServer.destURI = "CommandFromWebt_sh1";
+		g_WebCommServer.destURI = "CommandFromWebt_sh";
 	    connect(&g_WebCommServer, SIGNAL(NoticfyServerFacilityID(QString,int, QString, QString, int, QStringList)), this, SLOT(RequestForReadCOMM(QString,int, QString, QString, int, QStringList)), Qt::AutoConnection);
 
 

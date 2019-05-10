@@ -155,27 +155,8 @@ unsigned int EHT::GetSocket(QString StationID)
 		{
 			//离线
 			if (Clients[i].Online == false)
-			{
-				QJsonObject json, subJson;
-				json.insert("ServerTypeID", m_ServiceID);
-				json.insert("StationID", StationID);
-				json.insert("DeviceID", NULL);
-				subJson.insert("Count", 1);
-				subJson.insert("Params1", "offline");
-				json.insert("Command", 80203);
-				json.insert("Parameter", subJson);
-				//发送至Web服务器
-				QJsonDocument document;
-				document.setObject(json);
-				QByteArray byteArray = document.toJson(QJsonDocument::Compact);
-				LPCSTR dataChar;
-				dataChar = byteArray.data();
-				if (g_SimpleProducer_Command.send(dataChar, strlen(dataChar)) < 0)
-					GetErrorSlot(10304);
-				if (g_SimpleProducer_Command2.send(dataChar, strlen(dataChar)) < 0)
-					GetErrorSlot(10304);
 				return 0;
-			}
+			
 			return Clients[i].SocketID;
 		}
 	}

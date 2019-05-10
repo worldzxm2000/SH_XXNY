@@ -231,7 +231,7 @@ void IOCP::UnboxData(LPPER_IO_DATA perIOData, u_short len, LPPER_HANDLE_DATA Per
 		//单次接收的数据
 		QString RecvStr = QString(QLatin1String(perIOData->buffer,len));
 		//去除多余符号
-		RecvStr = RecvStr.trimmed();
+		//RecvStr = RecvStr.trimmed();
 		PerHandleData->Frame += RecvStr;
 		LRESULT pResult = -1;
 		//数据内存判断，如果数据内存大于40M说明有错误数据 需要清空内存，否则会造成内存溢
@@ -262,6 +262,8 @@ void IOCP::UnboxData(LPPER_IO_DATA perIOData, u_short len, LPPER_HANDLE_DATA Per
 				{
 				case 1://观测数据
 				{
+					
+
 					//JSON转成字符串
 					QJsonDocument document;
 					document.setObject(data_json);
@@ -349,7 +351,7 @@ void IOCP::UnboxData(LPPER_IO_DATA perIOData, u_short len, LPPER_HANDLE_DATA Per
 						emit OperationResultSignal(Command,Value1,Value2,Value3,Value4, m_Port,PerHandleData->StationID,PerHandleData->DeviceID);
 						break;
 					}
-					case 8://便携式
+					case 8://便携式,宁夏墒情 json形式
 					{
 				
 						emit OperationResultSignal(data_json, m_Port, PerHandleData->StationID, PerHandleData->DeviceID);

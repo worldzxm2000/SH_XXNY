@@ -15,7 +15,7 @@ typedef void(*GetControlWidget_Lib)(QString StationID, uint Socket, QWidget* par
 typedef void(*SetTime_Lib)(QString StationID, uint Socket);//∂‘ ±√¸¡Ó
 typedef void(*SetCommand_Lib)(uint Socket, int CommandType,QString Params1,QString Params2,QString StationID);//÷’∂À√¸¡Ó
 typedef void(*SetValueToControlWidget_Lib)(QStringList ValueList);//∑µªÿ÷µ
-extern 	SimpleProducer g_SimpleProducer, g_SimpleProducer_ZDH, g_SimpleProducer_Command, g_SimpleProducer_Command2;
+extern 	SimpleProducer g_SimpleProducer, g_SimpleProducer_ZDH, g_SimpleProducer_Command;
 extern WebCommServer g_WebCommServer ;
 const int DataBuffSize = 4 * 1024;
 typedef void* HLIB;		//∂ØÃ¨ø‚æ‰±˙

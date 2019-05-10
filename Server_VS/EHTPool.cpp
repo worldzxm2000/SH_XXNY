@@ -168,8 +168,8 @@ EHT*EHTPool::GetEHT(int ServiceID, QString StationID)
 {
 	for (QList<EHT*>::iterator iter = AllEHTList.begin(); iter != AllEHTList.end(); ++iter)
 	{
-		//if ((*iter)->GetServiceID() == ServiceID&&((*iter)->GetSocket(StationID)!=0))
-		if ((*iter)->GetServiceID() == ServiceID)
+		if ((*iter)->GetServiceID() == ServiceID&&((*iter)->GetSocket(StationID)!=0))
+		//if ((*iter)->GetServiceID() == ServiceID)
 		{
 			return (*iter);
 		}

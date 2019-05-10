@@ -2,6 +2,8 @@
 #include<QJsonObject>
 #include<QJsonDocument>
 #include<qDebug>
+#include <QDateTime>
+#include "LogWrite.h"
 WebCommServer::WebCommServer()
 {
 }
@@ -46,12 +48,6 @@ void WebCommServer::onMessage(const Message* message)
 					emit NoticfyServerFacilityID(UID,ServiceTypeID, StationID, DeviceID, CommandID,commLst);
 				}
 			}
-			else
-			{
-				qDebug() << "===> please check the string " << qTxt.toLocal8Bit().data();
-
-			}
-			
 		}
 	}
 	catch (CMSException& e) {
@@ -130,8 +126,38 @@ void WebCommServer::cleanup()
 	}
 }
 
+//连接被中断
 void WebCommServer::onException(const CMSException& ex AMQCPP_UNUSED)
 {
-	
+	if (m_IsConnected = true)
+	{
+		m_IsConnected = false;
+		close();
+		while (!initialize())
+		{
+			LogWrite::SYSLogMsgOutPut(QString::fromLocal8Bit("监听队列正在重连..."));
+			Sleep(1000 * 3);
+		}
+	}
+}
 
+void WebCommServer::transportInterrupted() //连接被中断
+{
+	if (m_IsConnected = true)
+	{
+		m_IsConnected = false;
+		close();
+		while (!initialize())
+		{
+			LogWrite::SYSLogMsgOutPut(QString::fromLocal8Bit("监听队列正在重连..."));
+			Sleep(1000 * 3);
+		}
+	}
+}
+
+void WebCommServer::transportResumed() //连接恢复
+{
+
+	m_IsConnected = true;
+	LogWrite::SYSLogMsgOutPut(QString::fromLocal8Bit("监听队列已连接"));
 }

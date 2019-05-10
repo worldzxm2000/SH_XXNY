@@ -15,7 +15,7 @@
 #include<QtXml>
 #include"MQConfigDlg.h"
 //消息中间件
-SimpleProducer g_SimpleProducer, g_SimpleProducer_ZDH, g_SimpleProducer_Command, g_SimpleProducer_Command2;
+SimpleProducer g_SimpleProducer, g_SimpleProducer_ZDH, g_SimpleProducer_Command;
 WebCommServer g_WebCommServer;
 //构造函数
 Server_VS::Server_VS(QWidget *parent)
@@ -136,7 +136,7 @@ void Server_VS::ConfigWindow()
 		g_SimpleProducer.UserName = "admin";
 		g_SimpleProducer.Password = "admin";
 		g_SimpleProducer.brokerURI = "tcp://117.158.216.250:61616";
-		g_SimpleProducer.destURI = "DataFromFacility1";
+		g_SimpleProducer.destURI = "DataFromFacility11";
 
 		g_SimpleProducer_ZDH.UserName = "admin";
 		g_SimpleProducer_ZDH.Password = "admin";
@@ -146,24 +146,18 @@ void Server_VS::ConfigWindow()
 		g_SimpleProducer_Command.UserName = "admin";
 		g_SimpleProducer_Command.Password = "admin";
 		g_SimpleProducer_Command.brokerURI = "tcp://117.158.216.250:61616";
-		g_SimpleProducer_Command.destURI = "t_sh";
-
-		g_SimpleProducer_Command2.UserName = "admin";
-		g_SimpleProducer_Command2.Password = "admin";
-		g_SimpleProducer_Command2.brokerURI = "tcp://117.158.216.250:61616";
-		g_SimpleProducer_Command2.destURI = "t_sh_test";
+		g_SimpleProducer_Command.destURI = "t_sh1";
 
 		g_WebCommServer.UserName = "admin";
 		g_WebCommServer.Password = "admin";
 		g_WebCommServer.brokerURI = "tcp://117.158.216.250:61616";
-		g_WebCommServer.destURI = "CommandFromWebt_sh";
-	   connect(&g_WebCommServer, SIGNAL(NoticfyServerFacilityID(QString,int, QString, QString, int, QStringList)), this, SLOT(RequestForReadCOMM(QString,int, QString, QString, int, QStringList)), Qt::AutoConnection);
+		g_WebCommServer.destURI = "CommandFromWebt_sh1";
+	    connect(&g_WebCommServer, SIGNAL(NoticfyServerFacilityID(QString,int, QString, QString, int, QStringList)), this, SLOT(RequestForReadCOMM(QString,int, QString, QString, int, QStringList)), Qt::AutoConnection);
 
 
 		g_SimpleProducer.start();
 		g_SimpleProducer_ZDH.start();
 		g_SimpleProducer_Command.start();
-		g_SimpleProducer_Command2.start();
      	g_WebCommServer.start();
 	
 		return;
@@ -227,13 +221,18 @@ LRESULT Server_VS::InitializeCommandSocket()
 void Server_VS::RequestForReadCOMM(QString UID,int ServiceTypeID, QString StationID, QString FacilityID, int Command, QStringList CommLst)
 {
 	//通过业务号和区站号找到对应的Socket号
-	if (EHTPool.GetEHT(ServiceTypeID, StationID) == NULL)
-		return;
+// 	if (EHTPool.GetEHT(ServiceTypeID, StationID) == NULL)
+// 		return;
 	//发送指令
 	//EHTPool.GetEHT(ServiceTypeID)->SendCommand(Command, FacilityID,CommLst);
 
-		EHTPool.GetEHT(ServiceTypeID, StationID)->SendCommand(UID,Command, StationID, CommLst);
-	
+		//EHTPool.GetEHT(ServiceTypeID, StationID)->SendCommand(UID,Command, StationID, CommLst);
+		EHT *teht = EHTPool.GetEHT(ServiceTypeID, StationID);
+		if (teht ==NULL)
+		{
+			return;
+		}
+		teht->SendCommand(UID, Command, StationID, CommLst);
 }
 
 //添加Lib服务

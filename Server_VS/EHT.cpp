@@ -172,8 +172,6 @@ unsigned int EHT::GetSocket(QString StationID)
 				dataChar = byteArray.data();
 				if (g_SimpleProducer_Command.send(dataChar, strlen(dataChar)) < 0)
 					GetErrorSlot(10304);
-				if (g_SimpleProducer_Command2.send(dataChar, strlen(dataChar)) < 0)
-					GetErrorSlot(10304);
 				return 0;
 			}
 			return Clients[i].SocketID;
@@ -915,8 +913,6 @@ void EHT::SendCommand(QString UID,int cmm, QString StationID, QStringList CommLs
 		dataChar = byteArray.data();
 		if (g_SimpleProducer_Command.send(dataChar, strlen(dataChar)) < 0)
 			GetErrorSlot(10304);
-		if (g_SimpleProducer_Command2.send(dataChar, strlen(dataChar)) < 0)
-			GetErrorSlot(10304);
 		return;
 	}
 	ClientsQ.append(client);
@@ -974,7 +970,6 @@ void EHT::Reconnect()
 	}
 	g_SimpleProducer.close();
 	g_SimpleProducer_ZDH.close();
-	g_SimpleProducer_Command2.close();
 	g_SimpleProducer_Command.close();
 	g_WebCommServer.close();
 	
@@ -983,7 +978,6 @@ void EHT::Reconnect()
 	g_SimpleProducer.start();
 	g_SimpleProducer_ZDH.start();
 	g_SimpleProducer_Command.start();
-	g_SimpleProducer_Command2.start();
 	g_WebCommServer.start();
 }
 
@@ -1048,8 +1042,7 @@ void EHT::GetClient(QJsonObject json)
 			dataChar = byteArray.data();
 			if (g_SimpleProducer_Command.send(dataChar, strlen(dataChar)) < 0)
 				GetErrorSlot(10304);
-			if (g_SimpleProducer_Command2.send(dataChar, strlen(dataChar)) < 0)
-				GetErrorSlot(10304);
+			qDebug() << "send activemq meg " << QDateTime::currentDateTime().toString("hh:mm:ss:zzz");
 			m_timerMutex.lock();
 			ClientsQ.removeAt(i);
 			m_timerMutex.unlock();

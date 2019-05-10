@@ -16,6 +16,7 @@
 #include <iostream>
 #include <memory>
 #include<QObject>
+#include <QTimer>
 using namespace activemq;
 using namespace activemq::core;
 using namespace decaf;
@@ -31,11 +32,13 @@ public:
 	WebCommServer();
 	~WebCommServer();
 	bool start();
-   bool initialize();
+    bool initialize();
 	void close();
 	void cleanup();
 	virtual void onMessage(const Message* message);
 	virtual void onException(const CMSException& ex AMQCPP_UNUSED);
+	virtual void transportResumed();
+	virtual void transportInterrupted();//连接恢复
 	std::string UserName;
 	std::string Password;
 	Connection* connection;
@@ -46,6 +49,10 @@ public:
 	bool clientAck;
 	std::string brokerURI;
 	std::string destURI;
+private: 
+	bool m_IsConnected;
+	//重连定时器
+	QTimer *ReconnectTimer;
 signals:
 	//通知UI读取设备参数指令
 	void NoticfyServerFacilityID(QString UID,int ServiceTypeID, QString StationID, QString DeviceID, int Command, QStringList CommLst);
